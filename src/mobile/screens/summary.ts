@@ -45,7 +45,7 @@ screens.summary = {
           <div class="field-label">Everything else · quick hits</div>
           ${b.quickHits.map((q) => `<div class="quick-hit"><b>${esc(q.who)}</b>${esc(q.text)}</div>`).join('') || '<p class="muted small">Nothing notable.</p>'}` : '';
     return `${header('Daily summary', { eyebrow: day, right: `<button class="icon-btn" data-act="sum-refresh" aria-label="Refresh">↻</button>${accountButton()}` })}
-      <div class="scroll pad" id="sum-scroll">${body}
+      <div class="scroll pad" id="sum-scroll">${app.view?.status.ai ? '' : '<div class="notice" style="margin:0 0 12px">AI features are off, so this is a plain list. Turn them on in Settings for a written brief and chat.</div>'}${body}
         <div class="field-label">Due this week</div>${calendarHtml()}
         <div class="field-label">Ask about your email</div>
         <div class="chips">${chips().map((c) => `<button class="chip" data-act="sum-ask" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>

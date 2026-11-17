@@ -54,8 +54,10 @@ screens.settings = {
           ${toggle('colorLabels', 'Color-coded priority labels', 'Red and orange labels you can see in any mail app.')}
           <p class="muted small">It never sends, replies or forwards on its own.</p>
         </div>
-        <div class="card"><b>AI</b>
-          <p class="muted small">Uses the team's Gemini access for testers. To use your own free key from Google AI Studio, paste it here.${st.ownGeminiKey ? ` Saved key ends in ${esc(st.ownGeminiKey.slice(-4))}.` : ''}</p>
+        <div class="card"><b>AI features (optional)</b>
+          ${toggle('aiEnabled', 'Turn on AI features', 'Summaries, next steps, reply drafts, the daily brief, chat and voice-reply cleanup. Sorting works the same with this off.')}
+          <div class="privacy-box"><b>Your privacy</b><br>With AI on, the text of the emails it reads is sent to Google's Gemini. If you add your own <b>paid</b> Gemini key, your emails stay private: Google doesn't use them for training. With the team's key (or a free key), Google may use them to improve and train its AI.</div>
+          <p class="muted small">Your own key (optional), from Google AI Studio with billing turned on.${st.ownGeminiKey ? ` Saved key ends in ${esc(st.ownGeminiKey.slice(-4))}.` : ''}</p>
           <div style="display:flex;gap:8px"><input class="text-input" id="own-key" type="password" placeholder="Gemini API key" autocomplete="off"><button class="btn btn-small" data-act="save-key">Save</button></div>
           ${st.ownGeminiKey ? '<button class="btn btn-small btn-ghost" data-act="clear-key" style="margin-top:6px">Use the team key instead</button>' : ''}
         </div>
@@ -74,7 +76,7 @@ app.on({
   'save-key': () => {
     const key = (document.querySelector('#own-key') as HTMLInputElement).value.trim();
     if (!/^[\w-]{20,}$/.test(key)) { app.toast('That does not look like a Gemini API key.', 'error'); return; }
-    return app.run(app.service!.act({ type: 'settings', patch: { ownGeminiKey: key } }).then(() => 'Saved. AI now uses your key.'));
+    return app.run(app.service!.act({ type: 'settings', patch: { ownGeminiKey: key, aiEnabled: true } }).then(() => 'Saved. AI features are on and use your key.'));
   },
-  'clear-key': () => app.run(app.service!.act({ type: 'settings', patch: { ownGeminiKey: '' } }).then(() => 'Using the team key again.')),
+  'clear-key': () => app.run(app.service!.act({ type: 'settings', patch: { ownGeminiKey: '' } }).then(() => "AI features use the team's key again.")),
 });

@@ -107,6 +107,8 @@ export interface Analysis {
   draft?: string;
   due?: { iso: string; label: string } | null;
   phone?: string | null;
+  /** Written by Gemini (false/absent = the plain no-AI version). */
+  ai?: boolean;
   at: number;
 }
 
@@ -124,6 +126,7 @@ export interface Settings {
   autoFile: boolean;          // allow folder moves once confident (never sends)
   ccFolder: boolean;          // move emails where I'm only CC'd into a "CC" folder
   colorLabels: boolean;       // write Priority labels/categories to the mailbox
+  aiEnabled: boolean;         // opt-in: send email text to Gemini for summaries, next steps, drafts, brief, chat
   ownGeminiKey: string;       // optional: user's own key instead of the team proxy
   everythingElseOrder: 'priority' | 'newest';
 }

@@ -1,6 +1,6 @@
 /* Gemini: per-email next step + drafted reply, thread-end summaries, the daily brief, "ask about my email" chat
    and voice-reply cleanup. Calls go through the team proxy (your key, testers only) unless the user has added
-   their own Gemini key. Every feature has a plain fallback so the app still works without AI. */
+   their own Gemini key. Off until the user opts in (Settings). Every feature has a plain fallback so the app still works without AI. */
 import { CONFIG } from './config';
 import type { Analysis, FullMessage, MailMessage, ThreadSummary } from './types';
 import { firstName, stripQuoted } from './util';
@@ -14,11 +14,13 @@ type Schema = Record<string, unknown>;
 export class AiUnavailable extends Error {}
 
 export class Gemini {
-  constructor(private ownKey: () => string, private auth: AiAuth | null) {}
+  constructor(private ownKey: () => string, private auth: AiAuth | null, private enabled: () => boolean = () => true) {}
 
-  get available(): boolean { return Boolean(this.ownKey() || (CONFIG.proxyUrl && this.auth)); }
+  /** True only when the user opted in to AI features and there is a way to reach Gemini. */
+  get available(): boolean { return this.enabled() && Boolean(this.ownKey() || (CONFIG.proxyUrl && this.auth)); }
 
   private async generate(request: Record<string, unknown>, fast: boolean): Promise<string> {
+    if (!this.enabled()) throw new AiUnavailable('AI features are off. Turn them on in Settings.');
     const model = fast ? CONFIG.geminiFastModel : CONFIG.geminiModel;
     const key = this.ownKey();
     let response: Response;
@@ -108,6 +110,7 @@ ${emailBlock(m, body)}`, {
     draft: result.draft || undefined,
     due: dueIso && !Number.isNaN(Date.parse(dueIso)) ? { iso: dueIso, label: (result as { dueLabel?: string }).dueLabel || '' } : null,
     phone: result.phone || null,
+    ai: true,
     at: Date.now(),
   };
 }

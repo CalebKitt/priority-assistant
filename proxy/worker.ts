@@ -1,7 +1,7 @@
 /* Priority Assistant proxy (Cloudflare Worker). Two jobs:
    1. Sign-in broker: holds the Google/Microsoft client secrets and swaps OAuth codes for tokens, so the extension
       and phone app get refresh tokens without shipping secrets.
-   2. Gemini proxy: forwards AI requests using the team's Gemini key, only for signed-in testers on ALLOWED_EMAILS.
+   2. Gemini proxy: forwards AI requests using the team's Gemini key, only for signed-in users matching ALLOWED_EMAILS ("*" = anyone signed in).
    Secrets are set with `wrangler secret put` (see docs/SETUP.md). Nothing about the user's email is stored. */
 
 export interface Env {

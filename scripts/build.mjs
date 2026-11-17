@@ -41,6 +41,7 @@ function copyStatic() {
   cpSync(join(root, 'src/extension/options.html'), join(ext, 'options.html'));
 
   for (const file of ['index.html', 'manifest.webmanifest', 'sw.js']) cpSync(join(root, 'src/mobile', file), join(mob, file));
+  for (const file of ['about.html', 'privacy.html', 'site.css']) cpSync(join(root, 'src/site', file), join(mob, file));
   cpSync(join(root, 'src/dev/harness.html'), join(mob, 'dev/index.html'), { recursive: true });
 
   const icons = makeIcons([16, 32, 48, 128, 192, 512]);

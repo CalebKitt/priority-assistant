@@ -37,6 +37,7 @@
     .check { display: grid; grid-template-columns: 22px 1fr; gap: 4px 6px; }
     #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px; display: none; }
     #toast.error { background: var(--bad); }
+    .privacy-box { background: #eef4ff; border: 1px solid #cfdcf7; color: #1f3a68; border-radius: 12px; padding: 10px 14px; margin: 6px 0 10px; }
   </style>
 </head>
 <body>
@@ -64,8 +65,10 @@
     </section>
 
     <section class="card">
-      <h2>AI (Gemini)</h2>
-      <p class="muted" style="margin-top:0">By default the assistant uses the team's Gemini access for testers. If you'd rather use your own (free keys at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>), paste it here. It is saved in your own Google Drive/OneDrive app folder so your phone gets it too.</p>
+      <h2>AI features (optional)</h2>
+      <label class="toggle"><input type="checkbox" id="ai-enabled"><span><b>Turn on AI features</b><br><span class="muted">Email summaries and next steps, reply drafts, "where did this thread end up?" summaries, the daily brief, chat about your email, and voice-reply cleanup. Sorting, learning and filing work the same with this off.</span></span></label>
+      <div class="privacy-box"><b>Your privacy</b><br>With AI on, the text of the emails it reads is sent to Google's Gemini. If you add your own <b>paid</b> Gemini key below, your emails stay private: Google doesn't use them for training. With the team's key (or a free key), Google may use them to improve and train its AI.</div>
+      <p class="muted">Your own key (optional). Create one at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> and turn on billing for it to be paid. It is saved in your own Google Drive/OneDrive app folder so your phone gets it too.</p>
       <div class="row"><input type="password" id="own-key" placeholder="Your Gemini API key (optional)" autocomplete="off"><button class="btn" data-act="save-key">Save</button><button class="btn btn-danger" data-act="clear-key">Remove</button></div>
     </section>
 
@@ -80,7 +83,7 @@
       <div id="setup" class="check"></div>
     </section>
 
-    <p class="muted">Privacy: your email goes only to Google/Microsoft (your mail provider) and to Gemini for summaries and drafts. What the assistant learns is stored in your browser and in a hidden app folder in your own cloud storage. Nothing is kept on our servers.</p>
+    <p class="muted">Privacy: your email goes only to Google/Microsoft (your mail provider) and, only if you turn on AI features, to Gemini for summaries and drafts. What the assistant learns is stored in your browser and in a hidden app folder in your own cloud storage. Nothing is kept on our servers.</p>
   </main>
   <div id="toast" role="status"></div>
   <script src="options.js"></script>

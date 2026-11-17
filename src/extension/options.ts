@@ -39,6 +39,9 @@ async function load() {
   select.innerHTML = accounts.map((a) => `<option value="${esc(a.email)}">${esc(a.email)}</option>`).join('');
   if (accounts.some((a) => a.email === current)) select.value = current;
   fillSettings();
+  const ai = $('#ai-enabled') as HTMLInputElement;
+  ai.checked = accounts.some((a) => a.status?.settings?.aiEnabled);
+  ai.disabled = !accounts.length;
   const own = accounts.find((a) => a.status?.settings?.ownGeminiKey)?.status?.settings?.ownGeminiKey || '';
   ($('#own-key') as HTMLInputElement).placeholder = own ? `Saved: ••••${own.slice(-4)}` : 'Your Gemini API key (optional)';
 }
@@ -94,10 +97,10 @@ document.addEventListener('click', async (event) => {
       case 'save-key': {
         const key = ($('#own-key') as HTMLInputElement).value.trim();
         if (!/^[\w-]{20,}$/.test(key)) { toast('That does not look like a Gemini API key.', true); return; }
-        await saveSetting({ ownGeminiKey: key }, accounts.map((a) => a.email));
-        ($('#own-key') as HTMLInputElement).value = ''; toast('Saved. AI now uses your own key.'); break;
+        await saveSetting({ ownGeminiKey: key, aiEnabled: true }, accounts.map((a) => a.email));
+        ($('#own-key') as HTMLInputElement).value = ''; toast('Saved. AI features are on and use your own key.'); break;
       }
-      case 'clear-key': await saveSetting({ ownGeminiKey: '' }, accounts.map((a) => a.email)); toast('Removed. Using the team key again.'); break;
+      case 'clear-key': await saveSetting({ ownGeminiKey: '' }, accounts.map((a) => a.email)); toast("Removed. AI features use the team's key again."); break;
     }
   } catch (error) { toast((error as Error).message, true); } finally { el.removeAttribute('disabled'); await load(); }
 });
@@ -105,7 +108,8 @@ document.addEventListener('click', async (event) => {
 document.addEventListener('change', async (event) => {
   const el = event.target as HTMLInputElement | HTMLSelectElement;
   try {
-    if (el.id === 'demo') { await send({ type: 'demo', on: (el as HTMLInputElement).checked }); toast((el as HTMLInputElement).checked ? 'Demo inbox on. Open Gmail or Outlook to see it.' : 'Demo inbox removed.'); }
+    if (el.id === 'ai-enabled') { const on = (el as HTMLInputElement).checked; await saveSetting({ aiEnabled: on }, accounts.map((a) => a.email)); toast(on ? 'AI features on.' : 'AI features off. Sorting keeps working.'); }
+    else if (el.id === 'demo') { await send({ type: 'demo', on: (el as HTMLInputElement).checked }); toast((el as HTMLInputElement).checked ? 'Demo inbox on. Open Gmail or Outlook to see it.' : 'Demo inbox removed.'); }
     else if (el.id === 'settings-account') fillSettings();
     else if (el.id === 'learning') { const email = selected()?.email; if (email) await send({ type: 'act', email, action: { type: 'set-mode', mode: (el as HTMLInputElement).checked ? 'learning' : 'assisting' } }); }
     else if (el.dataset.setting) await saveSetting({ [el.dataset.setting]: el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value } as Partial<Settings>);

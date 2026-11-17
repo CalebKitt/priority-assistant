@@ -46,7 +46,7 @@ In [Google Cloud Console](https://console.cloud.google.com/):
 
 1. Create a project (e.g. "Priority Assistant").
 2. **APIs & Services → Library**: enable **Gmail API** and **Google Drive API**.
-3. **Google Auth Platform → Branding / Audience**: user type **External**, publishing status **Testing**. Under **Test users**, add every tester's Gmail address (up to 100).
+3. **Google Auth Platform → Branding / Audience**: user type **External**, publishing status **Testing** while you set up (add yourself under **Test users**). To let anyone sign in without a test-user list, fill in **Branding** (home page `/about` and privacy policy `/privacy` on the phone app site, authorized domain `priority-assistant-team.workers.dev`, no logo) and press **Publish app** on **Audience**. Unverified, that allows 100 users over the project's lifetime, and sign-ins stop expiring every 7 days.
 4. **Data Access → Add scopes**: `openid`, `email`, `profile`, `.../auth/gmail.modify`, `.../auth/drive.appdata`.
 5. **Clients → Create client → Web application**. Under **Authorized redirect URIs** add:
    - `https://<extension id>.chromiumapp.org/`
@@ -56,7 +56,7 @@ In [Google Cloud Console](https://console.cloud.google.com/):
 
 Notes:
 - While the app is in Testing, Google ends sign-ins after 7 days. Testers just click **Connect Gmail** again.
-- `gmail.modify` is a "restricted" scope. That's fine for named testers. A public release would need Google's verification and a paid security assessment.
+- `gmail.modify` is a "restricted" scope. That's fine for up to 100 testers. A public release would need Google's verification and a paid security assessment.
 
 ## 5. Microsoft (Outlook, work and personal)
 
@@ -76,7 +76,7 @@ Create a key at [Google AI Studio](https://aistudio.google.com/apikey). On the f
 
 ## 7. Deploy the proxy (Cloudflare Worker)
 
-The proxy holds the Google/Microsoft client secrets and your Gemini key, and only answers allowlisted testers.
+The proxy holds the Google/Microsoft client secrets and your Gemini key, and only answers signed-in users on `ALLOWED_EMAILS`. AI features are opt-in per user (Settings → AI features).
 
 ```bash
 cd proxy
@@ -110,7 +110,7 @@ npx wrangler secret put GEMINI_API_KEY
 
 Edit `proxy/wrangler.toml`:
 
-- `ALLOWED_EMAILS`: testers allowed to use your Gemini key, e.g. `jeff@brester.com,@pillenfarms.com` (a leading `@` allows a whole domain).
+- `ALLOWED_EMAILS`: who may use your Gemini key, `*` for anyone signed in, or a list like `jeff@brester.com,@pillenfarms.com` (a leading `@` allows a whole domain).
 - `ALLOWED_ORIGINS`: `chrome-extension://<extension id>,http://localhost:5173,https://priority-assistant.pages.dev`
 
 ```bash

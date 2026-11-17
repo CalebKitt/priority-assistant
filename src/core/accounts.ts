@@ -36,7 +36,8 @@ export async function openService(account: StoredAccount, opts: OpenOptions): Pr
   }
   const holder: { service?: AssistantService } = {};
   const auth = tm ? aiAuthFor(tm) : opts.fallbackAiAuth?.() || null;
-  const ai = new Gemini(() => holder.service?.state.synced.settings.ownGeminiKey || '', auth);
+  const settings = () => holder.service?.state.synced.settings;
+  const ai = new Gemini(() => settings()?.ownGeminiKey || '', auth, () => Boolean(settings()?.aiEnabled));
   holder.service = await AssistantService.open(provider, opts.kv, ai);
   return { service: holder.service, tm };
 }

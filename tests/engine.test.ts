@@ -131,3 +131,21 @@ test('address parsing handles quoted commas', () => {
   assert.deepEqual(people.map((p) => p.email), ['jane@x.com', 'bob@y.com']);
   assert.equal(people[0].name, 'Doe, Jane');
 });
+
+test('AI features are opt-in: off means no AI calls, plain fallbacks still work', async () => {
+  let on = false;
+  const ai = new Gemini(() => 'fake-key-for-test-0000000000', null, () => on);
+  assert.equal(ai.available, false);
+  await assert.rejects(ai.text('s', 'p'), /AI features are off/);
+  on = true;
+  assert.equal(ai.available, true);
+
+  const service = await demoService();
+  assert.equal(service.state.synced.settings.aiEnabled, false);
+  const view = service.view();
+  assert.equal(view.status.ai, false);
+  assert.ok(view.priority.length > 0, 'sorting still works without AI');
+  const brief = await service.dailyBrief();
+  assert.ok(brief.priority.length > 0, 'plain brief still works without AI');
+  assert.match(await service.ask('anything?', []), /Turn on AI features/);
+});

@@ -57,7 +57,7 @@ export interface AccountState {
   error: string;
 }
 
-export const DEFAULT_SETTINGS: Settings = { autoFile: true, ccFolder: true, colorLabels: true, ownGeminiKey: '', everythingElseOrder: 'priority' };
+export const DEFAULT_SETTINGS: Settings = { autoFile: true, ccFolder: true, colorLabels: true, aiEnabled: false, ownGeminiKey: '', everythingElseOrder: 'priority' };
 
 export function emptySynced(): Synced {
   return {

@@ -467,7 +467,7 @@ export class AssistantService {
       const top = this.rows().filter((r) => r.priority && !r.handled).slice(0, 6);
       for (const r of top) {
         const cached = this.state.analyses[r.id];
-        if (cached && Date.now() - cached.at < DAY) continue;
+        if (cached?.ai && Date.now() - cached.at < DAY) continue;
         try { await this.analyze(r.id); } catch (error) { console.warn('AI analysis failed; using the basic summary.', error); break; }
       }
     } finally { this.enriching = false; }
@@ -477,7 +477,8 @@ export class AssistantService {
     const t = this.state.tracked[id];
     if (!t) throw new Error('That email is no longer in your recent inbox.');
     const cached = this.state.analyses[id];
-    if (cached && !force) return cached;
+    // A plain (no-AI) card is replaced once AI is on, e.g. after opting in on another device.
+    if (cached && !force && (cached.ai || !this.ai.available)) return cached;
     let analysis: Analysis;
     if (this.ai.available) {
       const body = await this.provider.body(t.m);
@@ -542,7 +543,7 @@ export class AssistantService {
 
   async ask(question: string, history: Array<{ role: 'me' | 'ai'; text: string }>): Promise<string> {
     const context = Object.values(this.state.tracked).filter((t) => Date.now() - t.m.date < 3 * DAY).sort((a, b) => b.m.date - a.m.date).map((t) => t.m);
-    if (!this.ai.available) return 'AI is not set up, so I can only rank and file. Add a Gemini key in Settings to ask questions.';
+    if (!this.ai.available) return 'AI features are off, so I can only rank and file. Turn on AI features in Settings to ask questions about your email.';
     return askAboutEmail(this.ai, this.me, question, context, history);
   }
 
@@ -667,7 +668,14 @@ export class AssistantService {
         s.mode = action.mode; s.modeAt = Date.now(); s.modeSetBy = 'user';
         this.changed(); return action.mode === 'assisting' ? 'Suggestions are on.' : 'Back to learning quietly. No changes to your inbox.';
       }
-      case 'settings': { s.settings = { ...s.settings, ...action.patch }; s.settingsAt = Date.now(); this.changed(); return 'Settings saved.'; }
+      case 'settings': {
+        s.settings = { ...s.settings, ...action.patch }; s.settingsAt = Date.now();
+        // AI turned on/off or key changed: drop the plain/old summaries so they are rewritten the new way.
+        if ('aiEnabled' in action.patch || 'ownGeminiKey' in action.patch) { this.state.analyses = {}; this.state.threads = {}; this.brief = null; }
+        this.changed();
+        void this.enrich();
+        return 'Settings saved.';
+      }
       case 'sync': { await this.sync(); return ''; }
       case 'simulate-arrival': {
         const p = this.provider as unknown as { simulateArrival?: () => Promise<void> };

@@ -4,7 +4,7 @@ compatibility_date = "2026-10-01"
 
 [vars]
 # Who may use the team's Gemini key. Comma-separated emails or @domains, or "*" for any signed-in user.
-ALLOWED_EMAILS = "kittc522@gmail.com,calebnwaite@gmail.com,elisevalentic@gmail.com"
+ALLOWED_EMAILS = "*"
 # Pages allowed to call this proxy: chrome-extension://<extension id>, your hosted mobile app, and local dev.
 ALLOWED_ORIGINS = "chrome-extension://kkciphldaihnbmjfleiahpppphlljeji,http://localhost:5173,https://priority-assistant.priority-assistant-team.workers.dev"
 # Optional: restrict which Gemini models callers may use.

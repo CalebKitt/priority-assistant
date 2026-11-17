@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <h1>Priority Assistant privacy policy</h1>
+    <p class="muted">Last updated November 17, 2026</p>
+    <p>Priority Assistant ("the app") is a student project, made up of a Chrome extension and a phone web app. This page explains what the app accesses, where that data goes, and how to remove it.</p>
+
+    <h2>What the app accesses</h2>
+    <p>When you connect an account, you grant access to:</p>
+    <ul>
+      <li><b>Google:</b> your email (read, label, move, and send when you press send), plus a hidden app-only folder in your Google Drive. Your name and email address identify the account.</li>
+      <li><b>Microsoft:</b> your email and mailbox settings (read, categorize, move, and send when you press send), plus an app-only folder in your OneDrive. Your name and email address identify the account.</li>
+    </ul>
+    <p>The app cannot see the rest of your Drive or OneDrive. It only sees its own app folder.</p>
+
+    <h2>How the data is used</h2>
+    <ul>
+      <li><b>Sorting and suggestions.</b> Your email is read in your own browser or phone to rank it, suggest next steps and folders, and show summaries.</li>
+      <li><b>What it learns.</b> Your choices (what you open, answer, forward, file, or ignore) and the model learned from them are stored in your browser and in your own Drive or OneDrive app folder, so your devices stay in sync. The app has no database of its own.</li>
+      <li><b>AI features (off unless you turn them on).</b> AI features are optional and off by default. With them off, no email is sent to any AI service, and sorting, learning, and filing still work. If you turn them on in Settings, the text of the relevant emails is sent to Google's Gemini API for summaries, next steps, reply drafts, the daily brief, chat, and voice-reply cleanup. By default it goes through our relay server, which uses the team's Gemini key. If you add your own Gemini key in Settings, it goes straight from your device to Google. Google processes it under the <a href="https://ai.google.dev/gemini-api/terms">Gemini API terms</a>. If you use your own paid Gemini key, Google does not use your content to improve its products. With the team's key or a free key, Google may use it to improve and train its products.</li>
+      <li><b>Sign-in.</b> To finish sign-in and keep you signed in, our relay server exchanges a one-time code with Google or Microsoft for access tokens. The tokens are returned to your device and stored there.</li>
+    </ul>
+
+    <h2>What our relay server keeps</h2>
+    <p>Nothing. The relay (a Cloudflare Worker) passes sign-in requests and AI requests through and returns the answer. It does not store or log email content, tokens, or what you learned. Cloudflare may keep standard request metadata, such as time and IP address, under its own policies.</p>
+
+    <h2>What we don't do</h2>
+    <ul>
+      <li>We don't sell your data or share it with anyone besides the services named above.</li>
+      <li>We don't use your data for advertising.</li>
+      <li>We don't train any AI models on your email.</li>
+      <li>People on the team do not read your email.</li>
+    </ul>
+    <p>Priority Assistant's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+    <h2>Removing your data</h2>
+    <ul>
+      <li>Disconnect the account in Priority Assistant's Settings, then remove the extension or clear the phone app's site data.</li>
+      <li>Revoke access at <a href="https://myaccount.google.com/permissions">Google account permissions</a> or <a href="https://account.live.com/consent/Manage">Microsoft app permissions</a>. To delete the app folder in Drive, go to Drive → Settings → Manage apps → Priority Assistant → Delete hidden app data. In OneDrive, delete Apps → Priority Assistant.</li>
+      <li>Labels or categories the app added (such as the priority color labels) stay in your mailbox until you delete them.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>Questions? Contact the team member who invited you to test the app.</p>
+    <p class="links"><a href="about.html">About Priority Assistant</a></p>
+  </main>
+</body>
+</html>
