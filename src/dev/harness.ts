@@ -14,7 +14,11 @@ const site: Site = {
   accountHint: () => '',
   openNative: (row) => alert(`In Gmail this opens the thread natively (#inbox/${row.threadId}).`),
   nativeThreadId: () => null,
+  hideSelector: '[role=main]',
+  isDark: () => document.body.classList.contains('dark') || matchMedia('(prefers-color-scheme: dark)').matches,
 };
+
+if (new URLSearchParams(location.search).has('dark')) document.body.classList.add('dark');
 
 const kv = new LocalStorageKV('pa-demo:');
 const backend = new LocalBackend(null, {

@@ -9,12 +9,15 @@
     "dev": "node scripts/build.mjs --watch --serve",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node scripts/build.mjs --tests && node --test \"dist/tests/*.test.mjs\"",
-    "keygen": "node scripts/keygen.mjs"
+    "keygen": "node scripts/keygen.mjs",
+    "deploy:app": "node scripts/build.mjs && wrangler deploy",
+    "deploy:proxy": "wrangler deploy --config proxy/wrangler.toml"
   },
   "devDependencies": {
     "@types/chrome": "^0.3.7",
     "@types/node": "^26.6.6",
     "esbuild": "^0.28.2",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "wrangler": "^4.163.0"
   }
 }

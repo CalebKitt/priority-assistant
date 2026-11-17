@@ -13,6 +13,24 @@ export interface Site {
   openNative(row: RowVM, path: string | null): void;
   /** Thread id of an email the user opened natively, when we can tell. */
   nativeThreadId(): string | null;
+  /** The page element whose content the overlay replaces; hidden while the overlay is up. */
+  hideSelector: string;
+  /** True when the mail page is using a dark theme. */
+  isDark(): boolean;
+}
+
+/** Dark if the first opaque background behind the given element (or the page) is dark. */
+export function pageIsDark(selectors: string[]): boolean {
+  let el: Element | null = selectors.map((s) => document.querySelector(s)).find(Boolean) || document.body;
+  while (el) {
+    const m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(getComputedStyle(el).backgroundColor);
+    if (m && (m[4] === undefined || Number(m[4]) > 0.5)) {
+      const [r, g, b] = [m[1], m[2], m[3]].map(Number);
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b < 110;
+    }
+    el = el.parentElement;
+  }
+  return matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
@@ -44,6 +62,8 @@ export const gmail: Site = {
     if (!/^#[^/]+\/.{12,}/.test(location.hash)) return null;
     return document.querySelector('[data-legacy-thread-id]')?.getAttribute('data-legacy-thread-id') || null;
   },
+  hideSelector: 'div[role="main"]',
+  isDark: () => pageIsDark(['div[role="main"]']),
 };
 
 export const outlook: Site = {
@@ -67,6 +87,8 @@ export const outlook: Site = {
     else if (row.webLink) window.open(row.webLink, '_blank', 'noopener');
   },
   nativeThreadId: () => null,
+  hideSelector: '#MainModule, div[role="main"]',
+  isDark: () => pageIsDark(['#MainModule', 'div[role="main"]']),
 };
 
 export function detectSite(): Site | null {

@@ -35,6 +35,7 @@ export class PaApp {
     whyOpen: false,
   };
   private sheet: SheetCtx | null = null;
+  private root: HTMLElement;
   private lastRoute = '';
 
   constructor(private site: Site, private backend: Backend, host: HTMLElement) {
@@ -45,6 +46,7 @@ export class PaApp {
     root.className = 'pa-root';
     root.innerHTML = '<div class="pa-overlay" hidden></div><button class="pa-pill" hidden></button><div class="pa-panel" hidden></div><div class="sheet-host" hidden></div><div class="toast-host" aria-live="polite"></div>';
     this.shadow.append(style, root);
+    this.root = root;
     this.els = {
       overlay: root.querySelector('.pa-overlay')!, panel: root.querySelector('.pa-panel')!, sheet: root.querySelector('.sheet-host')!,
       toasts: root.querySelector('.toast-host')!, pill: root.querySelector('.pa-pill')!,
@@ -119,7 +121,21 @@ export class PaApp {
     return Boolean(this.view) && this.ui.priorityView && (this.site.isListRoute() || Boolean(this.ui.reading));
   }
 
+  /** While the overlay is up, hide the native list underneath so the two never show through each other. */
+  private hideNative(hide: boolean) {
+    const id = 'priority-assistant-hide-native';
+    let style = document.getElementById(id);
+    if (hide && !style) {
+      style = document.createElement('style');
+      style.id = id;
+      style.textContent = `${this.site.hideSelector} { visibility: hidden !important; }`;
+      (document.head || document.documentElement).append(style);
+    } else if (!hide && style) style.remove();
+  }
+
   layout() {
+    this.root.classList.toggle('dark', this.site.isDark());
+    this.hideNative(!this.els.overlay.hidden);
     const insets = this.site.panelInsets();
     const panelW = 360;
     const panelVisible = !this.els.panel.hidden;
@@ -161,7 +177,7 @@ export class PaApp {
         <span class="ov-tools">
           ${v.account.kind === 'demo' ? '<button class="btn btn-small btn-ghost" data-act="simulate" title="Demo: deliver a new email">+ New email</button>' : ''}
           <button class="icon-btn" data-act="sync" title="Check for new mail">${v.status.syncing ? '<span class="spinner"></span>' : '↻'}</button>
-          <button class="btn btn-small" data-act="native" title="Show the normal ${this.site.label} inbox">${this.site.label} view</button>
+          <label class="switch-row" style="flex:none" title="Turn off to see your normal ${this.site.label} inbox"><button class="switch on" role="switch" aria-checked="true" data-act="native"><span></span></button>Priority view</label>
         </span>
       </div>
       <div class="ov-body">${this.ui.reading ? this.readingHtml() : this.listHtml()}</div>`;
@@ -343,7 +359,7 @@ export class PaApp {
         <button class="icon-btn small" data-act="panel-toggle" title="Collapse">–</button></div>
       <div class="as-body">${this.panelBody()}</div>
       ${v ? `<div class="as-foot"><label class="switch-row"><button class="switch${v.mode === 'learning' ? ' on' : ''}" role="switch" aria-checked="${v.mode === 'learning'}" data-act="set-mode" data-mode="${v.mode === 'learning' ? 'assisting' : 'learning'}"><span></span></button>Learning mode</label>
-        ${!this.showOverlay() && this.site.isListRoute() ? '<button class="btn btn-small" data-act="priority-view">✦ Priority view</button>' : ''}</div>` : ''}`;
+        ${this.site.isListRoute() || this.ui.reading ? `<label class="switch-row" style="flex:none"><button class="switch${this.ui.priorityView ? ' on' : ''}" role="switch" aria-checked="${this.ui.priorityView}" data-act="${this.ui.priorityView ? 'native' : 'priority-view'}"><span></span></button>Priority view</label>` : ''}</div>` : ''}`;
     const body = this.$('.as-body', p);
     if (body) body.scrollTop = scroll;
     this.layout();

@@ -121,17 +121,15 @@ It prints a URL like `https://priority-assistant-proxy.<you>.workers.dev`. Check
 
 ## 8. Host the phone app
 
-Cloudflare Pages is the simplest since you already have wrangler. From the project root:
+The phone app is served as static files by a Cloudflare Worker on the same account (`wrangler.jsonc` in the project root). From the project root:
 
 ```bash
-npm run build
+npm run deploy:app
 ```
 
-```bash
-npx wrangler pages deploy dist/mobile --project-name priority-assistant
-```
+It builds and prints the URL, e.g. `https://priority-assistant.<your-subdomain>.workers.dev/`. That URL must be in both redirect URI lists (steps 4 and 5) and in the proxy's `ALLOWED_ORIGINS` (redeploy with `npm run deploy:proxy`).
 
-The URL (e.g. `https://priority-assistant.pages.dev/`) must be in both redirect URI lists (steps 4 and 5) and in `ALLOWED_ORIGINS`.
+On Windows, if PowerShell says "running scripts is disabled", use `npx.cmd` instead of `npx` (or run the npm scripts above).
 
 ## 9. Fill in config.json and rebuild
 
@@ -147,7 +145,7 @@ The URL (e.g. `https://priority-assistant.pages.dev/`) must be in both redirect 
 }
 ```
 
-Run `npm run build`, reload the extension, and redeploy the phone app (step 8). The extension's settings page has a **Setup check** that shows what's still missing.
+Run `npm run build`, reload the extension, and redeploy the phone app with `npm run deploy:app`. The extension's settings page has a **Setup check** that shows what's still missing.
 
 ## 10. First run with a real account
 

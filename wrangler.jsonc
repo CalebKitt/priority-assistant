@@ -1,0 +1,7 @@
+{
+  // Hosts the phone web app (dist/mobile) as static files on Cloudflare. Deploy with: npm run deploy:app
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "priority-assistant",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "dist/mobile" }
+}
