@@ -89,6 +89,13 @@ export async function completeAuth(pending: PendingAuth, redirectedTo: string): 
   const code = params.get('code');
   if (!code) throw new AuthError('Sign-in did not return a code. Please try again.');
   const data = await proxyPost(`/auth/${pending.provider}/token`, { code, code_verifier: pending.verifier, redirect_uri: pending.redirectUri });
+  // Google lets people untick individual permissions on the consent screen. Without these two the app can't work.
+  if (pending.provider === 'google' && typeof data.scope === 'string') {
+    const granted = data.scope.split(' ');
+    const missing = [['gmail.modify', 'read, organize and send email in Gmail'], ['drive.appdata', 'see, create and delete its own configuration data in Google Drive']]
+      .filter(([s]) => !granted.some((g: string) => g.endsWith(`/auth/${s}`)));
+    if (missing.length) throw new AuthError(`Please sign in again and tick every box on Google's permission screen. Missing: ${missing.map(([, label]) => `"${label}"`).join(' and ')}.`);
+  }
   return tokenSetFrom(pending.provider, data, '');
 }
 

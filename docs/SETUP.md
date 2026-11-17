@@ -163,3 +163,12 @@ Run `npm run build`, reload the extension, and redeploy the phone app with `npm 
 | AI says "not on the tester list" | Add the email to `ALLOWED_EMAILS` and `npx wrangler deploy` again, or paste a personal Gemini key in Settings. |
 | AI model not found | Set `geminiModel` / `geminiFastModel` in config.json to a current model from https://ai.google.dev/gemini-api/docs/models and rebuild. |
 | Gmail sign-in stops after a week | Expected in Testing mode. Click Connect Gmail again. |
+
+## Sharing with testers
+
+`npm run deploy:app` builds everything, zips the extension and publishes it with an install page:
+
+- Install page: `<phone app URL>/install` (send testers this one link)
+- Zip: `<phone app URL>/download/priority-assistant.zip`
+
+Testers load the unzipped folder with **Load unpacked** in `chrome://extensions` (Chrome blocks installing extensions from outside the Web Store any other way). The manifest `key` keeps the extension ID the same for everyone, so sign-in works. To ship an update, bump `version` in `src/extension/manifest.json`, run `npm run deploy:app`, and tell testers to re-download, replace the folder's files and press ↻ on the extension. `npm run package` builds the zip locally without deploying.

@@ -35,8 +35,8 @@ async function tokenRequest(url: string, params: Record<string, string>): Promis
   const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(params) });
   const data = await response.json().then((d) => d as Record<string, unknown>).catch(() => ({ error: 'bad_response' }));
   // Only pass back what the app needs.
-  const { access_token, refresh_token, expires_in, id_token, error, error_description } = data as Record<string, string>;
-  return json(error ? { error, error_description } : { access_token, refresh_token, expires_in, id_token }, response.ok ? 200 : 400);
+  const { access_token, refresh_token, expires_in, id_token, scope, error, error_description } = data as Record<string, string>;
+  return json(error ? { error, error_description } : { access_token, refresh_token, expires_in, id_token, scope }, response.ok ? 200 : 400);
 }
 
 const GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token';

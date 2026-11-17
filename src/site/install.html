@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Install Priority Assistant</title>
+  <meta name="description" content="Install the Priority Assistant Chrome extension and phone app.">
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <h1><img src="icons/icon48.png" alt="" width="32" height="32"> Install Priority Assistant</h1>
+    <p>Thanks for testing! It takes about 3 minutes. You'll need <b>Google Chrome</b> on a computer, and a Gmail or Outlook account.</p>
+
+    <div class="download">
+      <a class="btn-primary" href="download/priority-assistant.zip?v={{VERSION}}" download>Download the extension</a>
+      <span class="muted">Version {{VERSION}} · {{SIZE}} · zip</span>
+    </div>
+
+    <h2>On your computer</h2>
+    <ol class="steps">
+      <li><b>Unzip it and put the folder somewhere it can stay</b>, like Documents. Chrome runs the extension from that folder, so don't delete it.
+        <span class="muted">Windows: right-click the zip → Extract All. Mac: double-click the zip.</span></li>
+      <li><b>Open Chrome's extensions page.</b> Copy this into Chrome's address bar:
+        <span class="copy-row"><code id="ext-url">chrome://extensions</code> <button type="button" class="btn-small" data-copy="ext-url">Copy</button></span>
+        <span class="muted">Chrome doesn't let websites link there directly.</span></li>
+      <li><b>Turn on "Developer mode"</b> with the switch in the top right corner.</li>
+      <li><b>Click "Load unpacked"</b> and choose the folder you unzipped (the one with <code>manifest.json</code> in it).</li>
+      <li><b>Connect your email.</b> The settings page opens on its own. Click Connect Gmail or Connect Outlook.
+        <div class="callout">
+          <b>Google will warn you, and that's expected.</b> You'll see "Google hasn't verified this app". Click <b>Advanced</b>, then <b>Go to Priority Assistant</b>.
+          On the next screen, <b>tick every box</b>. Without the Gmail and Drive permissions, it can't sort your email.
+        </div>
+        <span class="muted">Work or school Outlook accounts may say "Need admin approval". That means your IT department blocks apps like this. Use a personal account instead.</span></li>
+      <li><b>Pin it</b> (optional): click the puzzle piece next to Chrome's address bar, then the pin next to Priority Assistant.</li>
+      <li><b>Open Gmail or Outlook.</b> It studies your last 60 days of email first, which takes about a minute. Then your inbox shows up sorted by priority. Use the <b>Priority view</b> switch to flip back to your normal inbox.</li>
+    </ol>
+
+    <h2>On your phone</h2>
+    <ol class="steps">
+      <li>On your phone, open <a href="./"><span id="app-url">this site's phone app</span></a> and sign in with the <b>same account</b>. It picks up what it learned on your computer.</li>
+      <li>Add it to your home screen. <span class="muted">iPhone: Share → Add to Home Screen. Android: ⋮ → Install app.</span></li>
+      <li>Try the tabs: <b>Inbox</b>, <b>Sort</b> (swipe right for priority, left for trash, up to forward, down for later), <b>Speak</b> (hands-free) and <b>Summary</b>.</li>
+    </ol>
+
+    <h2>Good to know</h2>
+    <ul>
+      <li><b>It learns from you.</b> At first it only watches. Once its guesses match yours 85% of the time, it starts making suggestions. If something's in the wrong place, drag it to the right section and it learns from that.</li>
+      <li><b>It never sends email on its own.</b> It may file email into your existing folders once it's confident. Every move can be undone and shows up under "Moved for you". You can turn this off in Settings.</li>
+      <li><b>It adds color labels</b> ("Priority: Urgent" and "Priority: Important") so priority also shows in your normal mail apps. You can turn this off in Settings too.</li>
+      <li><b>AI features are off until you turn them on</b> in Settings. They add summaries, next steps, reply drafts, the daily brief, chat and voice-reply cleanup. With them on, the text of the emails it reads goes to Google's Gemini. If you use your own <b>paid</b> Gemini key, Google doesn't use your emails for training. With the team's key or a free key, Google may use them to improve and train its AI.</li>
+      <li><b>Chrome may show a "developer mode extensions" warning</b> when it starts. That's because the extension isn't in the Chrome Web Store yet. Keep the extension on.</li>
+    </ul>
+
+    <h2>Getting updates</h2>
+    <p>When there's a new version, download it again from this page, unzip it into the <b>same folder</b> (replace the files), then click the ↻ reload button on Priority Assistant in <code>chrome://extensions</code> and refresh Gmail or Outlook. What it learned is kept.</p>
+
+    <h2>Removing it</h2>
+    <p>Click <b>Remove</b> on Priority Assistant in <code>chrome://extensions</code>. To also remove its access and saved data, follow the steps in the <a href="privacy">privacy policy</a>.</p>
+
+    <p class="links">Found a bug or have feedback? Tell the person who invited you. · <a href="about">About</a> · <a href="privacy">Privacy policy</a></p>
+  </main>
+  <script>
+    // Show the real phone-app address, since testers usually read this page on their computer.
+    document.getElementById('app-url').textContent = location.origin.replace(/^https?:\/\//, '');
+    document.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-copy]');
+      if (!button) return;
+      const text = document.getElementById(button.dataset.copy).textContent;
+      try { await navigator.clipboard.writeText(text); button.textContent = 'Copied'; }
+      catch { button.textContent = 'Select and copy it'; }
+      setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+    });
+  </script>
+</body>
+</html>

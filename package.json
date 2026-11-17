@@ -10,8 +10,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node scripts/build.mjs --tests && node --test \"dist/tests/*.test.mjs\"",
     "keygen": "node scripts/keygen.mjs",
-    "deploy:app": "node scripts/build.mjs && wrangler deploy",
-    "deploy:proxy": "wrangler deploy --config proxy/wrangler.toml"
+    "deploy:app": "node scripts/build.mjs && node scripts/package.mjs && wrangler deploy",
+    "deploy:proxy": "wrangler deploy --config proxy/wrangler.toml",
+    "package": "node scripts/build.mjs && node scripts/package.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.3.7",
