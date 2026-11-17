@@ -1,0 +1,20 @@
+{
+  "name": "priority-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Priority Assistant: learns how you handle email and ranks Gmail/Outlook by priority. Chrome extension + mobile web app.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch --serve",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node scripts/build.mjs --tests && node --test \"dist/tests/*.test.mjs\"",
+    "keygen": "node scripts/keygen.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.3.7",
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

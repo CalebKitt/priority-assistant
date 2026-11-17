@@ -1,0 +1,10 @@
+{
+  "_readme": "Copy this file to config.json and fill it in (see docs/SETUP.md). config.json is git-ignored.",
+  "googleClientId": "",
+  "microsoftClientId": "",
+  "proxyUrl": "",
+  "mobileAppUrl": "http://localhost:5173/",
+  "extensionKey": "",
+  "geminiModel": "gemini-flash-latest",
+  "geminiFastModel": "gemini-flash-lite-latest"
+}

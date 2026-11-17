@@ -1,0 +1,18 @@
+name = "priority-assistant-proxy"
+main = "worker.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Who may use the team's Gemini key. Comma-separated emails or @domains, or "*" for any signed-in user.
+ALLOWED_EMAILS = ""
+# Pages allowed to call this proxy: chrome-extension://<extension id>, your hosted mobile app, and local dev.
+ALLOWED_ORIGINS = "http://localhost:5173"
+# Optional: restrict which Gemini models callers may use.
+ALLOWED_MODELS = "gemini-flash-latest,gemini-flash-lite-latest"
+
+# Secrets (never put these in this file). Set each one with:
+#   npx wrangler secret put GOOGLE_CLIENT_ID
+#   npx wrangler secret put GOOGLE_CLIENT_SECRET
+#   npx wrangler secret put MICROSOFT_CLIENT_ID
+#   npx wrangler secret put MICROSOFT_CLIENT_SECRET
+#   npx wrangler secret put GEMINI_API_KEY
