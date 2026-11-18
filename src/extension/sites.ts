@@ -15,6 +15,8 @@ export interface Site {
   nativeThreadId(): string | null;
   /** The page element whose content the overlay replaces; hidden while the overlay is up. */
   hideSelector: string;
+  /** The mail page's own left sidebar (folders, labels, Compose). Clicks left of the overlay count too. */
+  sidebarSelector?: string;
   /** True when the mail page is using a dark theme. */
   isDark(): boolean;
 }
@@ -63,6 +65,7 @@ export const gmail: Site = {
     return document.querySelector('[data-legacy-thread-id]')?.getAttribute('data-legacy-thread-id') || null;
   },
   hideSelector: 'div[role="main"]',
+  sidebarSelector: '.aeN, div[role="navigation"]',
   isDark: () => pageIsDark(['div[role="main"]']),
 };
 

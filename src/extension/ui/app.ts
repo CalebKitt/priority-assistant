@@ -38,7 +38,7 @@ export class PaApp {
   private root: HTMLElement;
   private lastRoute = '';
 
-  constructor(private site: Site, private backend: Backend, host: HTMLElement) {
+  constructor(private site: Site, private backend: Backend, private host: HTMLElement) {
     this.shadow = host.attachShadow({ mode: 'open' });
     const style = document.createElement('style');
     style.textContent = css;
@@ -74,6 +74,21 @@ export class PaApp {
     };
     setInterval(tick, 400);
     window.addEventListener('resize', () => this.layout());
+    // Capture phase, so it runs before Gmail/Outlook handle (and maybe swallow) the click.
+    document.addEventListener('click', (event) => this.onPageClick(event), true);
+  }
+
+  /** A click in the mail page's own sidebar (Starred, Sent, a label, Compose…) turns Priority view off right away,
+      so whatever they picked is never hidden under the overlay. */
+  private onPageClick(event: MouseEvent) {
+    if (this.els.overlay.hidden || event.composedPath().includes(this.host)) return;
+    const target = event.target instanceof Element ? event.target : null;
+    const o = this.els.overlay.getBoundingClientRect();
+    const inSidebar = Boolean(this.site.sidebarSelector && target?.closest(this.site.sidebarSelector))
+      || (event.clientX > 0 && event.clientX < o.left && event.clientY >= o.top);
+    if (!inSidebar) return;
+    this.ui.priorityView = false; this.ui.reading = null; this.saveUi(); this.render();
+    this.toast(`Priority view is off so you can use ${this.site.label}.`, 'ok', () => { this.ui.priorityView = true; this.saveUi(); this.render(); });
   }
 
   async refresh() {

@@ -15,6 +15,7 @@ const site: Site = {
   openNative: (row) => alert(`In Gmail this opens the thread natively (#inbox/${row.threadId}).`),
   nativeThreadId: () => null,
   hideSelector: '[role=main]',
+  sidebarSelector: '.side',
   isDark: () => document.body.classList.contains('dark') || matchMedia('(prefers-color-scheme: dark)').matches,
 };
 
