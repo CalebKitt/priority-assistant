@@ -16,9 +16,10 @@ const version = manifest.version;
 
 const readme = `Priority Assistant ${version}
 
-Install (Chrome):
-1. Keep this folder somewhere it can stay (for example Documents). Chrome runs the extension from here.
-2. Open chrome://extensions and turn on "Developer mode" (top right).
+Install (Chrome, Edge, Brave, Opera, Vivaldi; not Safari or Firefox):
+1. Keep this folder somewhere it can stay (for example Documents). Your browser runs the extension from here.
+2. Open the extensions page (chrome://extensions, edge://extensions, brave://extensions, opera://extensions
+   or vivaldi://extensions) and turn on "Developer mode".
 3. Click "Load unpacked" and choose this folder (the one with manifest.json in it).
 4. The settings page opens. Connect Gmail or Outlook.
 

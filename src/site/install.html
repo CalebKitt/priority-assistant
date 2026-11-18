@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Install Priority Assistant</title>
-  <meta name="description" content="Install the Priority Assistant Chrome extension and phone app.">
+  <meta name="description" content="Install the Priority Assistant browser extension (Chrome, Edge, Brave and other Chromium browsers) and phone app.">
   <link rel="icon" href="icons/icon32.png">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
   <main>
     <h1><img src="icons/icon48.png" alt="" width="32" height="32"> Install Priority Assistant</h1>
-    <p>Thanks for testing! It takes about 3 minutes. You'll need <b>Google Chrome</b> on a computer, and a Gmail or Outlook account.</p>
+    <p>Thanks for testing! It takes about 3 minutes. You'll need a Gmail or Outlook account and a computer with <b>Google Chrome, Microsoft Edge, Brave</b>, or another browser built on Chrome's engine (Opera, Vivaldi). It won't work in Safari or Firefox.</p>
+    <div class="unsupported" id="unsupported" hidden></div>
 
     <div class="download">
       <a class="btn-primary" href="download/priority-assistant.zip?v={{VERSION}}" download>Download the extension</a>
@@ -19,21 +20,31 @@
     </div>
 
     <h2>On your computer</h2>
+    <div class="picker" role="group" aria-label="Your browser">
+      <span class="label">Your browser:</span>
+      <button type="button" data-browser="chrome" aria-pressed="true">Chrome</button>
+      <button type="button" data-browser="edge" aria-pressed="false">Edge</button>
+      <button type="button" data-browser="brave" aria-pressed="false">Brave</button>
+      <button type="button" data-browser="opera" aria-pressed="false">Opera</button>
+      <button type="button" data-browser="vivaldi" aria-pressed="false">Vivaldi</button>
+      <button type="button" data-browser="other" aria-pressed="false">Other</button>
+    </div>
     <ol class="steps">
-      <li><b>Unzip it and put the folder somewhere it can stay</b>, like Documents. Chrome runs the extension from that folder, so don't delete it.
+      <li><b>Unzip it and put the folder somewhere it can stay</b>, like Documents. Your browser runs the extension from that folder, so don't delete it.
         <span class="muted">Windows: right-click the zip → Extract All. Mac: double-click the zip.</span></li>
-      <li><b>Open Chrome's extensions page.</b> Copy this into Chrome's address bar:
-        <span class="copy-row"><code id="ext-url">chrome://extensions</code> <button type="button" class="btn-small" data-copy="ext-url">Copy</button></span>
-        <span class="muted">Chrome doesn't let websites link there directly.</span></li>
-      <li><b>Turn on "Developer mode"</b> with the switch in the top right corner.</li>
+      <li><b>Open <span data-b="name">Chrome</span>'s extensions page.</b> Copy this into the address bar:
+        <span class="copy-row"><code id="ext-url" data-b="url">chrome://extensions</code> <button type="button" class="btn-small" data-copy="ext-url">Copy</button></span>
+        <span class="muted">Browsers don't let websites link there directly.</span></li>
+      <li><b>Turn on "Developer mode"</b> <span data-b="devmode">with the switch in the top right corner</span>.</li>
       <li><b>Click "Load unpacked"</b> and choose the folder you unzipped (the one with <code>manifest.json</code> in it).</li>
       <li><b>Connect your email.</b> The settings page opens on its own. Click Connect Gmail or Connect Outlook.
         <div class="callout">
           <b>Google will warn you, and that's expected.</b> You'll see "Google hasn't verified this app". Click <b>Advanced</b>, then <b>Go to Priority Assistant</b>.
           On the next screen, <b>tick every box</b>. Without the Gmail and Drive permissions, it can't sort your email.
         </div>
-        <span class="muted">Work or school Outlook accounts may say "Need admin approval". That means your IT department blocks apps like this. Use a personal account instead.</span></li>
-      <li><b>Pin it</b> (optional): click the puzzle piece next to Chrome's address bar, then the pin next to Priority Assistant.</li>
+        <span class="muted">Work or school Outlook accounts may say "Need admin approval". That means your IT department blocks apps like this. Use a personal account instead.</span>
+        <span class="muted">If the sign-in window doesn't open or fails, try Chrome and let us know which browser you were using.</span></li>
+      <li><b>Pin it</b> (optional): <span data-b="pin">click the puzzle piece next to the address bar, then the pin next to Priority Assistant</span>.</li>
       <li><b>Open Gmail or Outlook.</b> It studies your last 60 days of email first, which takes about a minute. Then your inbox shows up sorted by priority. Use the <b>Priority view</b> switch to flip back to your normal inbox.</li>
     </ol>
 
@@ -50,21 +61,57 @@
       <li><b>It never sends email on its own.</b> It may file email into your existing folders once it's confident. Every move can be undone and shows up under "Moved for you". You can turn this off in Settings.</li>
       <li><b>It adds color labels</b> ("Priority: Urgent" and "Priority: Important") so priority also shows in your normal mail apps. You can turn this off in Settings too.</li>
       <li><b>AI features are off until you turn them on</b> in Settings. They add summaries, next steps, reply drafts, the daily brief, chat and voice-reply cleanup. With them on, the text of the emails it reads goes to Google's Gemini. If you use your own <b>paid</b> Gemini key, Google doesn't use your emails for training. With the team's key or a free key, Google may use them to improve and train its AI.</li>
-      <li><b>Chrome may show a "developer mode extensions" warning</b> when it starts. That's because the extension isn't in the Chrome Web Store yet. Keep the extension on.</li>
+      <li><b>Your browser may warn you about developer-mode extensions</b> when it starts<span data-b="warning"></span>. That's because the extension isn't in an extension store yet. Keep the extension on.</li>
     </ul>
 
     <h2>Getting updates</h2>
-    <p>When there's a new version, download it again from this page, unzip it into the <b>same folder</b> (replace the files), then click the ↻ reload button on Priority Assistant in <code>chrome://extensions</code> and refresh Gmail or Outlook. What it learned is kept.</p>
+    <p>When there's a new version, download it again from this page, unzip it into the <b>same folder</b> (replace the files), then click the ↻ reload button on Priority Assistant in <code data-b="url">chrome://extensions</code> and refresh Gmail or Outlook. What it learned is kept.</p>
 
     <h2>Removing it</h2>
-    <p>Click <b>Remove</b> on Priority Assistant in <code>chrome://extensions</code>. To also remove its access and saved data, follow the steps in the <a href="privacy">privacy policy</a>.</p>
+    <p>Click <b>Remove</b> on Priority Assistant in <code data-b="url">chrome://extensions</code>. To also remove its access and saved data, follow the steps in the <a href="privacy">privacy policy</a>.</p>
 
     <p class="links">Found a bug or have feedback? Tell the person who invited you. · <a href="about">About</a> · <a href="privacy">Privacy policy</a></p>
   </main>
   <script>
     // Show the real phone-app address, since testers usually read this page on their computer.
     document.getElementById('app-url').textContent = location.origin.replace(/^https?:\/\//, '');
+
+    // Per-browser wording. Chrome is the default written into the page, so it reads fine without JavaScript.
+    const PUZZLE = 'click the puzzle piece next to the address bar, then the pin next to Priority Assistant';
+    const BROWSERS = {
+      chrome: { name: 'Chrome', url: 'chrome://extensions', devmode: 'with the switch in the top right corner', pin: PUZZLE, warning: '' },
+      edge: { name: 'Edge', url: 'edge://extensions', devmode: 'with the switch in the left sidebar (in a narrow window, open the ☰ menu at the top left first)', pin: 'click the puzzle piece (Extensions) in the toolbar, then the eye icon next to Priority Assistant', warning: ' (Edge may ask you to turn them off; choose not to)' },
+      brave: { name: 'Brave', url: 'brave://extensions', devmode: 'with the switch in the top right corner', pin: PUZZLE, warning: '' },
+      opera: { name: 'Opera', url: 'opera://extensions', devmode: 'with the switch in the top right corner', pin: 'click the cube (Extensions) icon in the toolbar, then the pin next to Priority Assistant', warning: '' },
+      vivaldi: { name: 'Vivaldi', url: 'vivaldi://extensions', devmode: 'with the switch in the top right corner', pin: 'it shows up in the toolbar on its own; right-click it there to move or hide it', warning: '' },
+      other: { name: 'your browser', url: 'chrome://extensions', devmode: 'with the switch on that page (usually top right)', pin: 'look for an Extensions or puzzle-piece icon in the toolbar and pin Priority Assistant', warning: '' },
+    };
+    function choose(key) {
+      const b = BROWSERS[key];
+      document.querySelectorAll('[data-b]').forEach((el) => { el.textContent = b[el.dataset.b]; });
+      document.querySelectorAll('[data-browser]').forEach((el) => el.setAttribute('aria-pressed', String(el.dataset.browser === key)));
+    }
+    function detect() {
+      const ua = navigator.userAgent;
+      if (/Firefox\//.test(ua)) return 'firefox';
+      if (/Safari\//.test(ua) && !/Chrome|Chromium|CriOS|Edg/.test(ua)) return 'safari';
+      if (navigator.brave) return 'brave';
+      if (/Edg\//.test(ua)) return 'edge';
+      if (/OPR\//.test(ua)) return 'opera';
+      if (/Vivaldi/.test(ua)) return 'vivaldi';
+      return 'chrome';
+    }
+    const detected = detect();
+    if (detected === 'firefox' || detected === 'safari') {
+      const note = document.getElementById('unsupported');
+      note.textContent = `Looks like you're on ${detected === 'firefox' ? 'Firefox' : 'Safari'}. The extension won't install here. Open this page in Chrome, Edge or Brave instead. The phone app below works in any browser.`;
+      note.hidden = false;
+      choose('chrome');
+    } else choose(detected);
+
     document.addEventListener('click', async (event) => {
+      const pick = event.target.closest('[data-browser]');
+      if (pick) { choose(pick.dataset.browser); return; }
       const button = event.target.closest('[data-copy]');
       if (!button) return;
       const text = document.getElementById(button.dataset.copy).textContent;
