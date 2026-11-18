@@ -13,6 +13,7 @@ const site: Site = {
   panelInsets: () => ({ top: 72, right: 70, bottom: 16 }),
   accountHint: () => '',
   openNative: (row) => alert(`In Gmail this opens the thread natively (#inbox/${row.threadId}).`),
+  goToInbox: () => { location.hash = '#inbox'; },
   nativeThreadId: () => null,
   hideSelector: '[role=main]',
   sidebarSelector: '.side',

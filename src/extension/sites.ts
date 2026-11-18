@@ -11,6 +11,8 @@ export interface Site {
   panelInsets(): { top: number; right: number; bottom: number };
   accountHint(): string;
   openNative(row: RowVM, path: string | null): void;
+  /** Navigate to the inbox (used when Priority view is turned on from another folder). */
+  goToInbox(): void;
   /** Thread id of an email the user opened natively, when we can tell. */
   nativeThreadId(): string | null;
   /** The page element whose content the overlay replaces; hidden while the overlay is up. */
@@ -60,12 +62,14 @@ export const gmail: Site = {
     return (EMAIL_RE.exec(button?.getAttribute('aria-label') || '')?.[0] || '').toLowerCase();
   },
   openNative(row) { location.hash = `#inbox/${row.threadId}`; },
+  goToInbox() { location.hash = '#inbox'; },
   nativeThreadId() {
     if (!/^#[^/]+\/.{12,}/.test(location.hash)) return null;
     return document.querySelector('[data-legacy-thread-id]')?.getAttribute('data-legacy-thread-id') || null;
   },
   hideSelector: 'div[role="main"]',
-  sidebarSelector: '.aeN, div[role="navigation"]',
+  // .aeN is the left column; [gh="cm"] / .aic is the Compose button.
+  sidebarSelector: '.aeN, .aic, [gh="cm"], div[role="navigation"]',
   isDark: () => pageIsDark(['div[role="main"]']),
 };
 
@@ -90,6 +94,7 @@ export const outlook: Site = {
     else if (row.webLink) window.open(row.webLink, '_blank', 'noopener');
   },
   nativeThreadId: () => null,
+  goToInbox() { location.assign(`${location.origin}/mail/inbox`); },
   hideSelector: '#MainModule, div[role="main"]',
   isDark: () => pageIsDark(['#MainModule', 'div[role="main"]']),
 };

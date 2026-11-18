@@ -75,20 +75,27 @@ export class PaApp {
     setInterval(tick, 400);
     window.addEventListener('resize', () => this.layout());
     // Capture phase, so it runs before Gmail/Outlook handle (and maybe swallow) the click.
+    // mousedown so it's instant (Gmail opens Compose on mousedown); click still covers keyboard activation.
+    document.addEventListener('mousedown', (event) => this.onPageClick(event), true);
     document.addEventListener('click', (event) => this.onPageClick(event), true);
   }
 
   /** A click in the mail page's own sidebar (Starred, Sent, a label, Compose…) turns Priority view off right away,
       so whatever they picked is never hidden under the overlay. */
   private onPageClick(event: MouseEvent) {
-    if (this.els.overlay.hidden || event.composedPath().includes(this.host)) return;
+    if (this.els.overlay.hidden || event.button !== 0 || event.composedPath().includes(this.host)) return;
     const target = event.target instanceof Element ? event.target : null;
+    // Dragging a sidebar's scrollbar isn't "picking something".
+    if (target && target.clientWidth && event.offsetX > target.clientWidth) return;
     const o = this.els.overlay.getBoundingClientRect();
+    // The left column starts under the mail page's top bar (Compose sits above the inbox list's top edge).
+    const bannerBottom = document.querySelector('header[role="banner"], [role="banner"], #gb')?.getBoundingClientRect().bottom || 0;
+    const top = bannerBottom > 0 ? Math.min(o.top, bannerBottom) : o.top;
     const inSidebar = Boolean(this.site.sidebarSelector && target?.closest(this.site.sidebarSelector))
-      || (event.clientX > 0 && event.clientX < o.left && event.clientY >= o.top);
+      || (event.clientX > 0 && event.clientX < o.left && event.clientY >= top);
     if (!inSidebar) return;
     this.ui.priorityView = false; this.ui.reading = null; this.saveUi(); this.render();
-    this.toast(`Priority view is off so you can use ${this.site.label}.`, 'ok', () => { this.ui.priorityView = true; this.saveUi(); this.render(); });
+    this.toast(`Priority view is off so you can use ${this.site.label}. Turn it back on in the assistant panel.`, 'ok', () => void this.handlers['priority-view'](this.root, new Event('click')));
   }
 
   async refresh() {
@@ -374,7 +381,7 @@ export class PaApp {
         <button class="icon-btn small" data-act="panel-toggle" title="Collapse">–</button></div>
       <div class="as-body">${this.panelBody()}</div>
       ${v ? `<div class="as-foot"><label class="switch-row"><button class="switch${v.mode === 'learning' ? ' on' : ''}" role="switch" aria-checked="${v.mode === 'learning'}" data-act="set-mode" data-mode="${v.mode === 'learning' ? 'assisting' : 'learning'}"><span></span></button>Learning mode</label>
-        ${this.site.isListRoute() || this.ui.reading ? `<label class="switch-row" style="flex:none"><button class="switch${this.ui.priorityView ? ' on' : ''}" role="switch" aria-checked="${this.ui.priorityView}" data-act="${this.ui.priorityView ? 'native' : 'priority-view'}"><span></span></button>Priority view</label>` : ''}</div>` : ''}`;
+        ${((on) => `<label class="switch-row" style="flex:none" title="${on ? `Show your normal ${this.site.label}` : 'Show your inbox sorted by priority'}"><button class="switch${on ? ' on' : ''}" role="switch" aria-checked="${on}" data-act="${on ? 'native' : 'priority-view'}"><span></span></button>Priority view</label>`)(this.showOverlay())}</div>` : ''}`;
     const body = this.$('.as-body', p);
     if (body) body.scrollTop = scroll;
     this.layout();
@@ -650,7 +657,12 @@ export class PaApp {
       expand: (el) => { this.ui.expanded.add(el.dataset.id!); this.renderOverlay(); },
       tab: (el) => { this.ui.tab = el.dataset.tab as 'inbox' | 'cc'; this.ui.reading = null; this.render(); },
       native: () => { this.ui.priorityView = false; this.ui.reading = null; this.saveUi(); this.render(); },
-      'priority-view': () => { this.ui.priorityView = true; this.saveUi(); this.render(); },
+      'priority-view': () => {
+        this.ui.priorityView = true; this.saveUi();
+        // Turned on from Starred, Sent, a label…: go to the inbox, which is what Priority view sorts.
+        if (!this.site.isListRoute() && !this.ui.reading) this.site.goToInbox();
+        this.render();
+      },
       'open-native': async (el) => {
         const row = this.findRow(el.dataset.id!);
         if (!row) return;
