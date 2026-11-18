@@ -21,6 +21,7 @@ function loadConfig() {
   delete config._readme;
   if (usedFallback) console.warn('config.json not found: building with config.example.json (demo mode only). See docs/SETUP.md.');
   config.extensionId = config.extensionKey ? extensionIdFromKey(config.extensionKey) : '';
+  config.build = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
   return config;
 }
 

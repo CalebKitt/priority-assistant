@@ -8,6 +8,8 @@ export interface AppConfig {
   extensionId: string;
   geminiModel: string;
   geminiFastModel: string;
+  /** When this copy was built (set by scripts/build.mjs), to tell which version a tester is running. */
+  build?: string;
 }
 
 declare const __CONFIG__: AppConfig;

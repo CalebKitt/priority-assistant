@@ -68,10 +68,13 @@ export class PaApp {
     this.backend.onChange(() => void this.refresh());
     await this.refresh();
     const tick = () => {
-      const route = `${location.pathname}${location.hash}`;
-      if (route !== this.lastRoute) { this.lastRoute = route; this.render(); }
-      this.layout();
-      this.liftPopups();
+      // Each step on its own, so a failure in one never stops the others (popups must still be lifted).
+      try {
+        const route = `${location.pathname}${location.hash}`;
+        if (route !== this.lastRoute) { this.lastRoute = route; this.render(); }
+      } catch (error) { console.error('Priority Assistant render failed', error); }
+      try { this.layout(); } catch (error) { console.error('Priority Assistant layout failed', error); }
+      try { this.liftPopups(); } catch (error) { console.error('Priority Assistant popup check failed', error); }
     };
     setInterval(tick, 400);
     window.addEventListener('resize', () => this.layout());
@@ -81,12 +84,13 @@ export class PaApp {
     document.addEventListener('click', (event) => this.onPageClick(event), true);
     // A click on the page may open Compose or a menu: lift it above our layer right away instead of on the next tick.
     for (const type of ['mouseup', 'keyup']) {
-      document.addEventListener(type, () => { for (const ms of [0, 60, 200]) setTimeout(() => this.liftPopups(), ms); }, true);
+      document.addEventListener(type, () => { for (const ms of [0, 60, 200, 500]) setTimeout(() => { try { this.liftPopups(); } catch { /* next tick retries */ } }, ms); }, true);
     }
   }
 
-  private liftChecked = new WeakSet<Element>();
   private lifted = new WeakSet<Element>();
+  /** Containers we raised but had to put back because they would have blocked clicks on our overlay. */
+  private unliftable = new WeakSet<Element>();
   /** A popup we could not raise above our layer (its page container blocks it); we step aside while it is open. */
   private yieldFor: Element | null = null;
 
@@ -95,20 +99,31 @@ export class PaApp {
   private liftPopups() {
     if (!this.site.popupSelector) return;
     const main = document.querySelector(this.site.hideSelector);
+    // Containers we know hold the page's popups (Gmail's Compose dock) are raised directly.
+    if (this.site.liftSelector) for (const box of document.querySelectorAll<HTMLElement>(this.site.liftSelector)) this.lift(box);
     for (const el of document.querySelectorAll(this.site.popupSelector)) {
-      if (this.liftChecked.has(el)) continue;
-      this.liftChecked.add(el);
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue; // hidden for now; looked at again once it shows
       let box: HTMLElement | null = null;
       for (let a: HTMLElement | null = el as HTMLElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement) {
         if (main && a.contains(main)) break;
+        if (this.lifted.has(a)) { box = null; break; } // already handled
         if (getComputedStyle(a).position !== 'static') box = a;
       }
-      if (box && !this.lifted.has(box)) {
-        box.style.setProperty('z-index', '2147483000', 'important');
-        this.lifted.add(box);
-      }
+      if (box) this.lift(box);
     }
     this.checkStillCovered(main);
+  }
+
+  /** Raise one page container above our layer, unless doing so would block clicks on our overlay or panel. */
+  private lift(box: HTMLElement) {
+    if (this.lifted.has(box) || this.unliftable.has(box)) return;
+    if (getComputedStyle(box).position === 'static') return; // z-index would do nothing
+    box.style.setProperty('z-index', '2147483000', 'important');
+    const probes = [this.els.overlay, this.els.panel].filter((e) => !e.hidden).map((e) => e.getBoundingClientRect()).map((r) => [r.left + 24, r.top + 24]);
+    const blocks = probes.some(([x, y]) => { const hit = document.elementFromPoint(x, y); return Boolean(hit && hit !== this.host && box.contains(hit)); });
+    if (blocks) { box.style.removeProperty('z-index'); this.unliftable.add(box); return; }
+    this.lifted.add(box);
   }
 
   /** Backup for the lift: if an open popup is still underneath our overlay or panel, hide them until it closes. */
@@ -223,7 +238,8 @@ export class PaApp {
       const right = panelVisible ? Math.min(rect.right, panelLeft) : rect.right;
       const o = this.els.overlay;
       o.style.left = `${rect.left}px`; o.style.top = `${rect.top}px`;
-      o.style.width = `${Math.max(320, right - rect.left)}px`; o.style.height = `${rect.height}px`;
+      o.style.width = `${Math.max(320, right - rect.left)}px`;
+      o.style.height = `${Math.max(240, Math.min(rect.bottom, window.innerHeight - 8) - rect.top)}px`; // Gmail's list can be taller than the window
     }
   }
 

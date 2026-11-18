@@ -3,6 +3,7 @@ import { detectSite, type Site } from './sites';
 import { PaApp } from './ui/app';
 import type { Backend, ViewResult } from './ui/backend';
 import { send } from './messages';
+import { CONFIG } from '../core/config';
 
 class ExtensionBackend implements Backend {
   private email = '';
@@ -40,6 +41,7 @@ function mount() {
   if (!site || document.getElementById('priority-assistant-root')) return;
   const host = document.createElement('div');
   host.id = 'priority-assistant-root';
+  host.dataset.version = `${chrome.runtime.getManifest().version} (built ${CONFIG.build || 'dev'})`;
   document.documentElement.append(host);
   const app = new PaApp(site, new ExtensionBackend(site), host);
   host.addEventListener('pa-toggle', () => app.togglePanel());

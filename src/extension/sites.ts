@@ -23,6 +23,8 @@ export interface Site {
   keepPriorityViewSelector?: string;
   /** The page's own popups (Compose windows, menus, dialogs), which must show above the overlay and panel. */
   popupSelector?: string;
+  /** Page containers known to hold those popups, raised directly. */
+  liftSelector?: string;
   /** True when the mail page is using a dark theme. */
   isDark(): boolean;
 }
@@ -74,6 +76,7 @@ export const gmail: Site = {
   hideSelector: 'div[role="main"]',
   sidebarSelector: '.aeN, div[role="navigation"]', // .aeN is the left column
   keepPriorityViewSelector: '.aic, [gh="cm"]', // the Compose button
+  liftSelector: '.dw', // Gmail's Compose dock: every Compose window lives in it (absolute, z-index 3, child of <body>)
   // name="subjectbox" and g_editable are inside every Compose window (docked or full screen)
   popupSelector: 'input[name="subjectbox"], div[g_editable="true"], div[role="dialog"], div[role="alertdialog"], div[role="menu"]',
   isDark: () => pageIsDark(['div[role="main"]']),
