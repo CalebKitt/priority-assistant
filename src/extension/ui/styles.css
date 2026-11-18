@@ -75,6 +75,8 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---------------- overlay list (covers the native inbox list) ---------------- */
+/* A page popup (Compose) could not be raised above us: get out of its way until it closes. */
+.pa-root.yield > :not(.toast-host) { visibility: hidden !important; }
 .pa-overlay { position: fixed; pointer-events: auto; background: var(--surface); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 0 1px var(--line); }
 .ov-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface); flex: none; }
 .ov-title { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }

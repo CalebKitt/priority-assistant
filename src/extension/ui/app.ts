@@ -71,20 +71,72 @@ export class PaApp {
       const route = `${location.pathname}${location.hash}`;
       if (route !== this.lastRoute) { this.lastRoute = route; this.render(); }
       this.layout();
+      this.liftPopups();
     };
     setInterval(tick, 400);
     window.addEventListener('resize', () => this.layout());
     // Capture phase, so it runs before Gmail/Outlook handle (and maybe swallow) the click.
-    // mousedown so it's instant (Gmail opens Compose on mousedown); click still covers keyboard activation.
+    // mousedown so it's instant; click still covers keyboard activation.
     document.addEventListener('mousedown', (event) => this.onPageClick(event), true);
     document.addEventListener('click', (event) => this.onPageClick(event), true);
+    // A click on the page may open Compose or a menu: lift it above our layer right away instead of on the next tick.
+    for (const type of ['mouseup', 'keyup']) {
+      document.addEventListener(type, () => { for (const ms of [0, 60, 200]) setTimeout(() => this.liftPopups(), ms); }, true);
+    }
   }
 
-  /** A click in the mail page's own sidebar (Starred, Sent, a label, Compose…) turns Priority view off right away,
+  private liftChecked = new WeakSet<Element>();
+  private lifted = new WeakSet<Element>();
+  /** A popup we could not raise above our layer (its page container blocks it); we step aside while it is open. */
+  private yieldFor: Element | null = null;
+
+  /** Gmail/Outlook's own popups (Compose windows, menus, dialogs) go above our overlay and panel. We find the
+      outermost positioned box around each one (but never one that holds the inbox list) and raise its z-index. */
+  private liftPopups() {
+    if (!this.site.popupSelector) return;
+    const main = document.querySelector(this.site.hideSelector);
+    for (const el of document.querySelectorAll(this.site.popupSelector)) {
+      if (this.liftChecked.has(el)) continue;
+      this.liftChecked.add(el);
+      let box: HTMLElement | null = null;
+      for (let a: HTMLElement | null = el as HTMLElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement) {
+        if (main && a.contains(main)) break;
+        if (getComputedStyle(a).position !== 'static') box = a;
+      }
+      if (box && !this.lifted.has(box)) {
+        box.style.setProperty('z-index', '2147483000', 'important');
+        this.lifted.add(box);
+      }
+    }
+    this.checkStillCovered(main);
+  }
+
+  /** Backup for the lift: if an open popup is still underneath our overlay or panel, hide them until it closes. */
+  private checkStillCovered(main: Element | null) {
+    const visible = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      const onScreen = r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
+      return el.isConnected && r.width > 0 && r.height > 0 && onScreen && getComputedStyle(el).visibility !== 'hidden';
+    };
+    let next: Element | null = this.yieldFor && visible(this.yieldFor) ? this.yieldFor : null;
+    if (!next) {
+      for (const el of document.querySelectorAll(this.site.popupSelector!)) {
+        if (main?.contains(el) || !visible(el)) continue;
+        const r = el.getBoundingClientRect();
+        const x = Math.min(Math.max(r.left + r.width / 2, 0), innerWidth - 1), y = Math.min(Math.max(r.top + r.height / 2, 0), innerHeight - 1);
+        if (document.elementFromPoint(x, y) === this.host) { next = el; break; }
+      }
+    }
+    if (next !== this.yieldFor) { this.yieldFor = next; this.layout(); }
+  }
+
+  /** A click in the mail page's own sidebar (Starred, Sent, a label…) turns Priority view off right away,
       so whatever they picked is never hidden under the overlay. */
   private onPageClick(event: MouseEvent) {
     if (this.els.overlay.hidden || event.button !== 0 || event.composedPath().includes(this.host)) return;
     const target = event.target instanceof Element ? event.target : null;
+    // Compose opens on top of the overlay, so it can stay in Priority view.
+    if (this.site.keepPriorityViewSelector && target?.closest(this.site.keepPriorityViewSelector)) return;
     // Dragging a sidebar's scrollbar isn't "picking something".
     if (target && target.clientWidth && event.offsetX > target.clientWidth) return;
     const o = this.els.overlay.getBoundingClientRect();
@@ -157,7 +209,8 @@ export class PaApp {
 
   layout() {
     this.root.classList.toggle('dark', this.site.isDark());
-    this.hideNative(!this.els.overlay.hidden);
+    this.root.classList.toggle('yield', Boolean(this.yieldFor));
+    this.hideNative(!this.els.overlay.hidden && !this.yieldFor);
     const insets = this.site.panelInsets();
     const panelW = 360;
     const panelVisible = !this.els.panel.hidden;

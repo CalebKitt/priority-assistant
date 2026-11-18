@@ -17,8 +17,12 @@ export interface Site {
   nativeThreadId(): string | null;
   /** The page element whose content the overlay replaces; hidden while the overlay is up. */
   hideSelector: string;
-  /** The mail page's own left sidebar (folders, labels, Compose). Clicks left of the overlay count too. */
+  /** The mail page's own left sidebar (folders, labels). Clicks left of the overlay count too. */
   sidebarSelector?: string;
+  /** Sidebar buttons that open something on top of the overlay (Compose), so Priority view can stay on. */
+  keepPriorityViewSelector?: string;
+  /** The page's own popups (Compose windows, menus, dialogs), which must show above the overlay and panel. */
+  popupSelector?: string;
   /** True when the mail page is using a dark theme. */
   isDark(): boolean;
 }
@@ -68,8 +72,10 @@ export const gmail: Site = {
     return document.querySelector('[data-legacy-thread-id]')?.getAttribute('data-legacy-thread-id') || null;
   },
   hideSelector: 'div[role="main"]',
-  // .aeN is the left column; [gh="cm"] / .aic is the Compose button.
-  sidebarSelector: '.aeN, .aic, [gh="cm"], div[role="navigation"]',
+  sidebarSelector: '.aeN, div[role="navigation"]', // .aeN is the left column
+  keepPriorityViewSelector: '.aic, [gh="cm"]', // the Compose button
+  // name="subjectbox" and g_editable are inside every Compose window (docked or full screen)
+  popupSelector: 'input[name="subjectbox"], div[g_editable="true"], div[role="dialog"], div[role="alertdialog"], div[role="menu"]',
   isDark: () => pageIsDark(['div[role="main"]']),
 };
 
@@ -96,6 +102,7 @@ export const outlook: Site = {
   nativeThreadId: () => null,
   goToInbox() { location.assign(`${location.origin}/mail/inbox`); },
   hideSelector: '#MainModule, div[role="main"]',
+  popupSelector: 'div[role="dialog"], div[role="alertdialog"], div[role="menu"], .ms-Layer',
   isDark: () => pageIsDark(['#MainModule', 'div[role="main"]']),
 };
 
