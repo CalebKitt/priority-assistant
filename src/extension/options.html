@@ -67,7 +67,7 @@
     <section class="card">
       <h2>AI features (optional)</h2>
       <label class="toggle"><input type="checkbox" id="ai-enabled"><span><b>Turn on AI features</b><br><span class="muted">Email summaries and next steps, reply drafts, "where did this thread end up?" summaries, the daily brief, chat about your email, and voice-reply cleanup. Sorting, learning and filing work the same with this off.</span></span></label>
-      <div class="privacy-box"><b>Your privacy</b><br>With AI on, the text of the emails it reads is sent to Google's Gemini. If you add your own <b>paid</b> Gemini key below, your emails stay private: Google doesn't use them for training. With the team's key (or a free key), Google may use them to improve and train its AI.</div>
+      <div class="privacy-box"><b>Your privacy</b><br>With AI on, the text of the emails it reads is sent to Google's Gemini. The team's key is a <b>paid</b> key, so Google doesn't use your emails to train its AI. If you add your own key below, your emails go straight to Google instead. A paid key of your own keeps that promise, but with a free key Google may use your emails to improve its AI.</div>
       <p class="muted">Your own key (optional). Create one at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> and turn on billing for it to be paid. It is saved in your own Google Drive/OneDrive app folder so your phone gets it too.</p>
       <div class="row"><input type="password" id="own-key" placeholder="Your Gemini API key (optional)" autocomplete="off"><button class="btn" data-act="save-key">Save</button><button class="btn btn-danger" data-act="clear-key">Remove</button></div>
     </section>

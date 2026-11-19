@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Priority Assistant: Overview for Managers and IT</title>
+<!-- Source for docs/Priority-Assistant-Security-Overview.pdf. To rebuild, print with Edge (from the docs folder):
+     msedge --headless --no-pdf-header-footer --print-to-pdf=Priority-Assistant-Security-Overview.pdf security-overview.html
+     Page 1 is for managers, page 2 for IT; keep each to one page. -->
+<style>
+  @page { size: Letter; margin: 0.5in 0.6in 0.55in; }
+  @page { @bottom-left { content: "Priority Assistant · v0.1.2 · Privacy policy: priority-assistant.priority-assistant-team.workers.dev/privacy"; font: 7.5pt "Segoe UI", Arial, sans-serif; color: #7a8290; } }
+  @page { @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 7.5pt "Segoe UI", Arial, sans-serif; color: #7a8290; } }
+  :root { --ink: #1c2330; --muted: #5b6474; --line: #d9dee6; --soft: #f3f6fa; --accent: #1f5fbf; --accent-soft: #e8f0fc; --warn: #8a5a00; --warn-soft: #fff6e0; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font: 9pt/1.36 "Segoe UI", Arial, sans-serif; color: var(--ink); background: #fff; }
+  .page + .page { break-before: page; }
+  .kicker { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.8pt; text-transform: uppercase; color: var(--accent); margin: 0 0 2pt; }
+  h1 { font-size: 18pt; line-height: 1.15; margin: 0 0 3pt; letter-spacing: -0.2pt; }
+  h2 { font-size: 10.5pt; margin: 10pt 0 4pt; padding-bottom: 2pt; border-bottom: 1.2pt solid var(--accent); }
+  h3 { font-size: 9pt; margin: 0 0 3pt; }
+  p { margin: 0 0 5pt; }
+  ul, ol { margin: 0 0 5pt; padding-left: 13pt; }
+  li { margin: 0 0 2.5pt; }
+  a { color: var(--accent); text-decoration: none; }
+  code { font: 7.8pt Consolas, "Courier New", monospace; background: var(--soft); padding: 0.5pt 2.5pt; border-radius: 2pt; white-space: nowrap; }
+  .sub { color: var(--muted); font-size: 9.5pt; margin: 0 0 3pt; }
+  .meta { color: var(--muted); font-size: 7.8pt; margin: 0 0 8pt; padding-bottom: 6pt; border-bottom: 0.75pt solid var(--line); }
+  .box { border: 0.75pt solid var(--line); border-radius: 4pt; padding: 6pt 9pt; margin: 0 0 6pt; }
+  .box p:last-child, .box ul:last-child { margin-bottom: 0; }
+  .ask { background: var(--accent-soft); border-color: #c4d6f3; }
+  .warn { background: var(--warn-soft); border-color: #ecd49a; }
+  .warn h3 { color: var(--warn); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14pt; }
+  .cols-wide { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 0 14pt; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 5pt; font-size: 8.4pt; }
+  th, td { text-align: left; vertical-align: top; padding: 3pt 5pt; border-bottom: 0.6pt solid var(--line); }
+  th { background: var(--soft); font-weight: 600; font-size: 7.8pt; color: var(--muted); }
+  td:first-child { font-weight: 600; }
+  .store td:first-child { width: 33%; }
+  .ids td:first-child { width: 26%; }
+  .lbl td:first-child { width: 15%; }
+  .no { color: #1b6e3a; font-weight: 600; }
+  .small { font-size: 7.8pt; color: var(--muted); }
+  .tight li { margin-bottom: 1.5pt; }
+  .it h2 { margin-top: 8pt; }
+</style>
+</head>
+<body>
+
+<!-- ============================== PAGE 1: managers ============================== -->
+<section class="page">
+  <p class="kicker">For managers</p>
+  <h1>Priority Assistant</h1>
+  <p class="sub">What it is, what it can see, and where its data is kept.</p>
+  <p class="meta">Version 0.1.2 &nbsp;·&nbsp; November 18, 2026 &nbsp;·&nbsp; Made by Group 11 (Caleb Kitt, Caleb Waite, Elise Valentic), a student class project</p>
+
+  <h2 style="margin-top:0">What it is</h2>
+  <p>Priority Assistant is a browser extension for Gmail and Outlook on the web (Chrome, Edge, Brave, Opera or Vivaldi), with an optional phone web app. It learns how the person already handles email (what they answer first, forward, ignore and file where) and ranks the inbox the same way, with top priorities, next steps and reminders in a sidebar. Once its guesses match the person's choices often enough, it can file routine email into folders, with undo.</p>
+
+  <div class="box ask">
+    <p><b>What we're asking:</b> allow the employee to install the extension in their work browser and connect their work mailbox for the test period. If your company restricts browser extensions or third-party apps, page 2 has what IT needs.</p>
+  </div>
+
+  <div class="cols-wide">
+    <div>
+      <h2>What it can access</h2>
+      <ul>
+        <li>Email in the connected mailbox: read it, label or categorize it, move it, put it in Trash, and send it when the person presses Send.</li>
+        <li>One app-only folder in that account's Google Drive or OneDrive. No other files.</li>
+        <li>The person's name and email address.</li>
+        <li>It runs only on Gmail and Outlook web pages, not on any other site.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Where data is kept</h2>
+      <table class="store">
+        <tbody>
+          <tr><td>Employee's browser or phone</td><td>Sign-in tokens, settings, recent email details (sender, subject, preview) and what it learned. All sorting runs here.</td></tr>
+          <tr><td>Their own Drive or OneDrive app folder</td><td>What it learned (senders, folders, reminders, settings), so computer and phone stay in sync. <b>Not</b> full email text.</td></tr>
+          <tr><td>Team relay (Cloudflare)</td><td>Passes sign-in requests through, and AI requests if AI is on. <span class="no">Stores nothing.</span></td></tr>
+          <tr><td>Google Gemini</td><td>Only if the person turns AI features on (see below).</td></tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin:0">We run no database, and no one on the team can see anyone's email.</p>
+    </div>
+  </div>
+
+  <h2>Safeguards</h2>
+  <div class="cols">
+    <ul>
+      <li><b>It never sends on its own.</b> It also asks again before forwarding attachments, money or bank details, email outside the company, or anything to more than five people.</li>
+      <li><b>Automatic filing has to earn trust.</b> It waits until its guesses match the person's choices 85% of the time, never files away anything that looks important, and every move can be undone.</li>
+      <li><b>Nothing is permanently deleted.</b> Trash goes to Gmail's Trash or Outlook's Deleted Items.</li>
+    </ul>
+    <ul>
+      <li><b>Standard sign-in.</b> Google's and Microsoft's own sign-in pages (OAuth 2.0 with PKCE). The app never sees passwords, and access can be revoked at any time.</li>
+      <li><b>No downloaded code.</b> Everything it runs is in the package the employee installs.</li>
+      <li><b>No ads and no selling data.</b> We don't train AI on anyone's email.</li>
+    </ul>
+  </div>
+
+  <h2>AI features: off by default</h2>
+  <p>With AI off, no email text goes to any AI service, and sorting, learning and filing still work. If the person turns AI on, the text of the emails being summarized or answered goes to Google's Gemini. The team's key is a paid key, so Google doesn't use that text to train its AI. The same goes for a company's own paid key; only a free personal key would let Google use it to improve its AI.</p>
+
+  <div class="box warn">
+    <h3>Where it stands</h3>
+    <p>This is a student project in early testing, with no independent security audit or certification such as SOC 2. It isn't in the Chrome Web Store, so it's installed in Developer mode and updated by hand. Google hasn't verified it (that takes a paid security assessment), so a warning appears at sign-in and it's limited to 100 Google users. Like other extensions, it keeps sign-in tokens in the browser, and revoking access cancels them.</p>
+  </div>
+</section>
+
+<!-- ============================== PAGE 2: IT ============================== -->
+<section class="page it">
+  <p class="kicker">For IT</p>
+  <h1>Allowing Priority Assistant</h1>
+  <p class="sub">Only needed if your browser, Google Workspace or Microsoft 365 policies block the install or the sign-in.</p>
+  <p class="meta">Questions: the Group 11 member who sent you this &nbsp;·&nbsp; Source code available on request</p>
+
+  <h2 style="margin-top:0">Identifiers</h2>
+  <table class="ids">
+    <tbody>
+      <tr><td>Extension ID</td><td><code>kkciphldaihnbmjfleiahpppphlljeji</code> <span class="small">(the same on every computer)</span></td></tr>
+      <tr><td>Google OAuth client ID</td><td><code>464429821363-lv13j3s45inaou0tuh2qrk07dv3b6l3l.apps.googleusercontent.com</code></td></tr>
+      <tr><td>Microsoft app (client) ID</td><td><code>18771f98-dc2d-4061-a9ad-00a80d904483</code> <span class="small">(publisher not verified)</span></td></tr>
+      <tr><td>Install page</td><td><code>https://priority-assistant.priority-assistant-team.workers.dev/install</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Permissions requested</h2>
+  <table class="lbl">
+    <tbody>
+      <tr><td>Google</td><td><code>gmail.modify</code> <code>drive.appdata</code> <code>openid</code> <code>email</code> <code>profile</code><br>Read, label, trash and send mail (this permission can't permanently delete), plus the app-only Drive folder.</td></tr>
+      <tr><td>Microsoft</td><td><code>Mail.ReadWrite</code> <code>Mail.Send</code> <code>MailboxSettings.ReadWrite</code> <code>Files.ReadWrite.AppFolder</code> <code>User.Read</code> <code>offline_access</code> <code>openid</code> <code>email</code> <code>profile</code><br>Read, move, categorize and send mail; create color categories; the app-only OneDrive folder.</td></tr>
+      <tr><td>Browser</td><td><code>storage</code> <code>unlimitedStorage</code> <code>identity</code> <code>alarms</code> <code>notifications</code><br>Runs only on mail.google.com and Outlook on the web. Checks for new mail once a minute.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Allowing it</h2>
+  <div class="cols">
+    <div>
+      <h3>Managed Chrome or Edge</h3>
+      <p>Testers install it with Developer mode and "Load unpacked." If policy blocks that, or blocks extensions not on an allow list, allow the extension ID above.</p>
+      <h3>Microsoft 365 (work or school)</h3>
+      <p>If the employee sees "Need admin approval," an admin connects Outlook in the extension once and ticks <b>"Consent on behalf of your organization."</b> You can later limit or remove it under Enterprise applications in the Entra admin center.</p>
+    </div>
+    <div>
+      <h3>Google Workspace</h3>
+      <ol class="tight">
+        <li>Admin console → Security → Access and data control → API controls.</li>
+        <li>Manage Third-Party App Access → add an app by OAuth client ID, and paste the Google client ID above.</li>
+        <li>Choose which users it applies to and set it to Trusted.</li>
+      </ol>
+      <p class="small">Menu names change from time to time. Google's help article "Control which third-party &amp; internal apps access Google Workspace data" has the current steps.</p>
+    </div>
+  </div>
+
+  <h2>Network addresses it contacts</h2>
+  <table class="lbl">
+    <tbody>
+      <tr><td>Mail and files</td><td>mail.google.com, gmail.googleapis.com, www.googleapis.com, graph.microsoft.com, Outlook on the web</td></tr>
+      <tr><td>Sign-in</td><td>accounts.google.com, oauth2.googleapis.com, login.microsoftonline.com</td></tr>
+      <tr><td>Our relay</td><td>priority-assistant-proxy.priority-assistant-team.workers.dev</td></tr>
+      <tr><td>Phone app</td><td>priority-assistant.priority-assistant-team.workers.dev (install page and downloads)</td></tr>
+      <tr><td>AI (own key)</td><td>generativelanguage.googleapis.com, only if AI is on and the person added their own Gemini key</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Removing it</h2>
+  <ol class="tight">
+    <li>Disconnect the account in Priority Assistant's Settings, then remove the extension. On a phone, clear the app's site data.</li>
+    <li>Revoke access at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a> (Google), <a href="https://myapps.microsoft.com">myapps.microsoft.com</a> (Microsoft work or school) or <a href="https://account.live.com/consent/Manage">account.live.com/consent/Manage</a> (Microsoft personal).</li>
+    <li>Delete the app folder: Google Drive → Settings → Manage apps → Priority Assistant → Delete hidden app data, or OneDrive → Apps → Priority Assistant.</li>
+  </ol>
+  <p class="small" style="margin:0">Priority labels or categories the app added stay in the mailbox until someone deletes them.</p>
+</section>
+
+</body>
+</html>

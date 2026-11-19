@@ -72,7 +72,7 @@ Work accounts: some companies only allow apps their IT admin approved. If a test
 
 ## 6. Gemini key
 
-Create a key at [Google AI Studio](https://aistudio.google.com/apikey). On the free tier Google may use prompts to improve its products. Turn on billing for that project if you don't want tester email used that way. Testers can also paste their own key in Settings, which bypasses the proxy.
+Create a key at [Google AI Studio](https://aistudio.google.com/apikey). On the free tier Google may use prompts to improve its products, so the team key should come from a project with billing on (paid tier). The privacy text in the app says the team key is paid. Testers can also paste their own key in Settings, which bypasses the proxy.
 
 ## 7. Deploy the proxy (Cloudflare Worker)
 
