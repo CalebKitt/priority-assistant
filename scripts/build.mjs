@@ -50,6 +50,7 @@ function copyStatic() {
     if (size <= 128) cpSync(icon, join(ext, `icons/icon${size}.png`));
     cpSync(icon, join(mob, `icons/icon${size}.png`));
   }
+  cpSync(join(root, 'src/icons/favicon.ico'), join(mob, 'favicon.ico'));
 }
 
 async function buildTests() {
