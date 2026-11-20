@@ -9,6 +9,8 @@ import css from './styles.css';
 
 type Handler = (el: HTMLElement, event: Event) => void | Promise<void>;
 const DAY = 86400000;
+/** The app's mark (envelope with an up arrow), drawn in the current text color. */
+const LOGO = `<svg class="pa-mark" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9.5H4.5a1.5 1.5 0 0 0-1.5 1.5v8a1.5 1.5 0 0 0 1.5 1.5h15a1.5 1.5 0 0 0 1.5-1.5v-8a1.5 1.5 0 0 0-1.5-1.5H17"/><path d="M3.5 10.5l8.5 6 8.5-6"/><path d="M12 13V2.5M8.5 6L12 2.5 15.5 6"/></svg>`;
 
 interface SheetCtx { kind: 'draft' | 'forward' | 'remind' | 'confirm'; id: string; [key: string]: unknown }
 
@@ -434,7 +436,7 @@ export class PaApp {
     if (!this.ui.panelOpen) {
       p.hidden = true; pill.hidden = false;
       const waiting = this.view?.mode === 'assisting' ? this.view.priority.length : 0;
-      pill.innerHTML = `✦ Priority Assistant${waiting ? ` <span class="badge">${waiting}</span>` : ''}`;
+      pill.innerHTML = `${LOGO} Priority Assistant${waiting ? ` <span class="badge">${waiting}</span>` : ''}`;
       pill.dataset.act = 'panel-toggle';
       this.layout();
       return;
@@ -444,7 +446,7 @@ export class PaApp {
     const v = this.view;
     const subtitle = !v ? 'Not connected on this page' : `${v.mode === 'learning' ? 'Learning mode' : 'Suggestions on'} · ${v.account.email}`;
     p.innerHTML = `
-      <div class="as-head"><span class="logo">✦</span><div><b>Priority Assistant</b><div class="muted">${esc(subtitle)}</div></div>
+      <div class="as-head"><span class="logo">${LOGO}</span><div><b>Priority Assistant</b><div class="muted">${esc(subtitle)}</div></div>
         ${v ? `<button class="icon-btn small" data-act="sync" title="Check for new mail">${v.status.syncing ? '<span class="spinner"></span>' : '↻'}</button>` : ''}
         <button class="icon-btn small" data-act="settings" title="Settings">⚙</button>
         <button class="icon-btn small" data-act="panel-toggle" title="Collapse">–</button></div>

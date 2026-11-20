@@ -4,7 +4,6 @@ import * as esbuild from 'esbuild';
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeIcons } from './icons.mjs';
 import { extensionIdFromKey } from './keygen.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -45,10 +44,11 @@ function copyStatic() {
   for (const file of ['about.html', 'privacy.html', 'site.css']) cpSync(join(root, 'src/site', file), join(mob, file));
   cpSync(join(root, 'src/dev/harness.html'), join(mob, 'dev/index.html'), { recursive: true });
 
-  const icons = makeIcons([16, 32, 48, 128, 192, 512]);
-  for (const [size, png] of Object.entries(icons)) {
-    if (Number(size) <= 128) writeFileSync(join(ext, `icons/icon${size}.png`), png);
-    writeFileSync(join(mob, `icons/icon${size}.png`), png);
+  // App icon (envelope with an up arrow), made from src/icons/logo-source.png.
+  for (const size of [16, 32, 48, 128, 192, 512]) {
+    const icon = join(root, `src/icons/icon${size}.png`);
+    if (size <= 128) cpSync(icon, join(ext, `icons/icon${size}.png`));
+    cpSync(icon, join(mob, `icons/icon${size}.png`));
   }
 }
 
