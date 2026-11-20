@@ -83,6 +83,26 @@ test('explicit corrections move emails and the model learns from them', async ()
   assert.ok(service.view().priority.some((r) => r.fromEmail === 'notifications@procore.example'));
 });
 
+test('make priority works on an email already marked done or replied to', async () => {
+  const service = await demoService();
+  await service.act({ type: 'done', id: 'e8' });
+  await service.act({ type: 'make-priority', id: 'e8' });
+  assert.ok(service.view().priority.some((r) => r.id === 'e8'), 'done email moves to Priority');
+  await service.act({ type: 'reply', id: 'e3', text: 'Confirmed for Wednesday.' });
+  await service.act({ type: 'make-priority', id: 'e3' });
+  assert.ok(service.view().priority.some((r) => r.id === 'e3'), 'replied email moves back to Priority');
+});
+
+test('make priority brings an email back from the CC folder', async () => {
+  const service = await demoService();
+  const moved = service.view().moved.find((m) => m.folderName === 'CC');
+  assert.ok(moved, 'something was filed in CC');
+  await service.act({ type: 'make-priority', id: moved.msgId });
+  const view = service.view();
+  assert.ok(view.priority.some((r) => r.id === moved.msgId), 'CC email is now in Priority');
+  assert.ok(!view.moved.some((m) => m.msgId === moved.msgId), 'no longer listed as moved');
+});
+
 test('replying through the app marks it handled and drops it from Priority', async () => {
   const service = await demoService();
   await service.act({ type: 'reply', id: 'e3', text: 'Confirmed for Wednesday.' });

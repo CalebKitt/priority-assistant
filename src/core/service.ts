@@ -575,11 +575,23 @@ export class AssistantService {
     switch (action.type) {
       case 'make-priority': {
         const x = need(); s.manual[x.m.id] = { priority: true, at: Date.now() };
+        // Priority only shows open inbox email: reopen it if it was replied to or marked done,
+        // and bring it back if I filed it away (CC folder or auto-file).
+        if (s.handled[x.m.id]) delete s.handled[x.m.id];
+        const filed = s.moved.find((m) => m.msgId === x.m.id && !m.undone);
+        const inCcFolder = Boolean(x.m.folderId && x.m.folderId === this.folderIdByName.get(CC_FOLDER));
+        if (!x.m.inInbox && (filed || inCcFolder)) {
+          await this.provider.moveToInbox({ ...x.m, folderId: filed?.folderId || x.m.folderId });
+          if (filed) filed.undone = true;
+          x.m = { ...x.m, inInbox: true, folderId: null };
+        }
         this.decide(x, 'made-priority', {}, 'explicit'); this.retrain();
         this.changed(); return 'Moved to Priority. I will learn from this.';
       }
       case 'not-priority': case 'later': {
         const x = need(); s.manual[x.m.id] = { priority: false, at: Date.now() };
+        // The row stands for its whole conversation, so an older message must not keep it in Priority.
+        for (const o of Object.values(this.state.tracked)) if (o.m.threadId === x.m.threadId && o.m.id !== x.m.id && o.m.inInbox) s.manual[o.m.id] = { priority: false, at: Date.now() };
         this.decide(x, action.type, {}, 'explicit'); this.retrain();
         this.changed(); return action.type === 'later' ? 'Saved for later.' : 'Moved out of Priority. I will learn from this.';
       }
